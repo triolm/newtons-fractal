@@ -18,6 +18,10 @@ public class Polynomial {
         return total;
     }
 
+    public ComplexNumber evaluateTerm(ComplexNumber n, ComplexNumber coeff, int power) {
+        return coeff.multiply(n.power(power));
+    }
+
     public ComplexNumber[] getCoeffs() {
         return coeffs;
     }
@@ -87,8 +91,10 @@ public class Polynomial {
         return new Polynomial(coeffs);
     }
 
-    public ComplexNumber evaluateTerm(ComplexNumber n, ComplexNumber coeff, int power) {
-        return coeff.multiply(n.power(power));
+    public ComplexNumber newtonsMethod(ComplexNumber n, int depth) {
+        if (depth == 0)
+            return n;
+        return newtonsMethod(n.subtract(evaluate(n).divide(derivative().evaluate(n))), depth - 1);
     }
 
     public String toString() {

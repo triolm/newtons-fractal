@@ -22,6 +22,9 @@ public class ComplexNumber {
     public ComplexNumber add(ComplexNumber other){
         return new ComplexNumber(real + other.getReal(), i + other.getI());
     }
+    public ComplexNumber subtract(ComplexNumber other){
+        return new ComplexNumber(real - other.getReal(), i - other.getI());
+    }
 
     public ComplexNumber multiply(ComplexNumber other){
         double f,o,i,l;
@@ -33,7 +36,14 @@ public class ComplexNumber {
         return new ComplexNumber(f + l,o + i);
     }
 
-    public ComplexNumber scale(int scalar){
+    public ComplexNumber divide(ComplexNumber other){
+        ComplexNumber conj = new ComplexNumber(other.getReal(), -other.getI());
+        ComplexNumber top = this.multiply(conj);
+        double bottom = Math.pow(other.getReal(),2) + Math.pow(other.getI(),2);
+        return top.scale(1/bottom);
+    }
+
+    public ComplexNumber scale(double scalar){
         return new ComplexNumber(real * scalar, i * scalar);
     }
 

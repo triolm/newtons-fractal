@@ -10,15 +10,19 @@ public class RootPolynomial extends Polynomial {
         Polynomial total = Polynomial.one;
         for (ComplexNumber i : roots) {
             ComplexNumber[] arr = { i.scale(-1), new ComplexNumber(1) };
-            total.multiply(new Polynomial(arr));
+            Polynomial p = new Polynomial(arr);
+            total = total.multiply(p);
         }
         return total.getCoeffs();
+    }
+
+    public ComplexNumber newtonsFractalPixel(ComplexNumber n, int depth) {
+        return closestRoot(newtonsMethod(n, depth));
     }
 
     public ComplexNumber closestRoot(ComplexNumber n) {
         ComplexNumber root = roots[0];
         double minDist = Double.POSITIVE_INFINITY;
-        // System.out.println();
 
         for (ComplexNumber i : roots) {
             double dist = n.getDist(i);
@@ -26,7 +30,6 @@ public class RootPolynomial extends Polynomial {
                 continue;
             minDist = dist;
             root = i;
-            // System.out.println(root);
         }
         return root;
     }

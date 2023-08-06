@@ -27,6 +27,54 @@ public class Tests {
             }
         }
         ColorImage.save("./image.png", img);
+
+    }
+
+    public static void newtonsFractals(int depth, int width, int nroots) {
+        ComplexNumber[] arr = new ComplexNumber[nroots];
+        for(int i = 0; i < nroots; i ++){
+            arr[i] = new ComplexNumber(Math.random(), Math.random());
+        }
+
+
+        System.out.print("roots: ");
+        for (ComplexNumber i : arr) {
+            System.out.print(i + " ");
+        }
+        System.out.println();
+        newtonsFractals(arr, depth, width);
+    }
+
+    public static void newtonsFractals(ComplexNumber[] arr, int depth, int width) {
+        RootPolynomial func = new RootPolynomial(arr);
+
+        double timeUntilProgressUpdate = 0;
+        progress(0);
+
+        ColorImage img = new ColorImage(width, width);
+        for (int i = 0; i < img.getWidth(); i++) {
+
+            timeUntilProgressUpdate += 20.0 / img.getWidth();
+            if (timeUntilProgressUpdate > 1) {
+                timeUntilProgressUpdate = 0;
+                progress((double) i / img.getWidth());
+            }
+
+            for (int j = 0; j < img.getHeight(); j++) {
+                ComplexNumber n = new ComplexNumber((double)i/width, (double)j/width);
+                ComplexNumber closest = func.newtonsFractalPixel(n, depth);
+                img.put(new Color(closest.getReal(),.5, closest.getI()), i, j);
+            }
+        }
+        progress(1);
+        ColorImage.save("./image.png", img);
+    }
+
+    public static void progress(double progress) {
+        progress *= 20;
+        System.out.print("\r");
+        System.out.print("\u2588".repeat((int) progress));
+        System.out.print("\u2591".repeat(20 - (int) progress));
     }
 
     public static void polynomialAddition() {
