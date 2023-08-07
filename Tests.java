@@ -45,7 +45,7 @@ public class Tests {
         newtonsFractals(arr, depth, width);
     }
 
-    public static void newtonsFractals(ComplexNumber[] arr, int depth, int width) {
+    public static ColorImage newtonsFractals(ComplexNumber[] arr, int depth, int width) {
         RootPolynomial func = new RootPolynomial(arr);
 
         double timeUntilProgressUpdate = 0;
@@ -67,7 +67,7 @@ public class Tests {
             }
         }
         progress(1);
-        ColorImage.save("./image.png", img);
+        return img;
     }
 
     public static void progress(double progress) {

@@ -29,4 +29,13 @@ public class Color {
         int ib = (int) (Math.min(Math.max(b, 0), 1) * 255 + 0.1);
         return (ir << 16) | (ig << 8) | (ib << 0);
     }
+
+     //converts from ARGB int to Color object
+     public static Color fromARGB(int argb) {
+        double b = ((argb) & 0xFF) / 255.0;
+        double g = ((argb >> 8) & 0xFF) / 255.0;
+        double r = ((argb >> 16) & 0xFF) / 255.0;
+        return new Color(r, g, b);
+    }
+
 }
