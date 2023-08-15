@@ -42,10 +42,13 @@ public class Tests {
             System.out.print(i + " ");
         }
         System.out.println();
-        newtonsFractals(arr, depth, width);
+        newtonsFractals(arr, depth, width,1,0,0);
     }
 
-    public static ColorImage newtonsFractals(ComplexNumber[] arr, int depth, int width) {
+    public static ColorImage newtonsFractals(ComplexNumber[] arr, int depth, int width, double fov) {
+        return newtonsFractals(arr, depth, width, fov,0,0);
+    }
+    public static ColorImage newtonsFractals(ComplexNumber[] arr, int depth, int width, double fov,double panx, double pany) {
         RootPolynomial func = new RootPolynomial(arr);
 
         double timeUntilProgressUpdate = 0;
@@ -61,7 +64,7 @@ public class Tests {
             }
 
             for (int j = 0; j < img.getHeight(); j++) {
-                ComplexNumber n = new ComplexNumber((double)i/width, (double)j/width);
+                ComplexNumber n = new ComplexNumber(panx+(fov *i/width), pany+(fov *j/width));
                 ComplexNumber closest = func.newtonsFractalPixel(n, depth);
                 img.put(new Color(closest.getReal(),.5, closest.getI()), i, j);
             }
