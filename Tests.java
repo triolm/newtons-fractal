@@ -64,10 +64,13 @@ public class Tests {
             }
 
             for (int j = 0; j < img.getHeight(); j++) {
+
                 ComplexNumber n = new ComplexNumber(panx+(fov *i/width), pany+(fov *j/width));
+                
                 ComplexNumber closest = func.newtonsFractalPixel(n, depth);
                 img.put(new Color(closest.getReal(),.5, closest.getI()), i, j);
             }
+           
         }
         progress(1);
         return img;

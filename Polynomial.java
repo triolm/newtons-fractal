@@ -1,5 +1,6 @@
 public class Polynomial {
     private ComplexNumber[] coeffs;
+    private Polynomial deriv;
     public static Polynomial one = new Polynomial();
 
     public Polynomial(ComplexNumber[] coeffs) {
@@ -84,14 +85,25 @@ public class Polynomial {
     }
 
     public Polynomial derivative() {
+        if(deriv != null){
+            return deriv;
+        }
         ComplexNumber[] coeffs = this.decreasePower(1).getCoeffs();
         for (int i = 0; i < coeffs.length; i++) {
             coeffs[i] = coeffs[i].scale(i + 1);
         }
-        return new Polynomial(coeffs);
+        deriv = new Polynomial(coeffs);
+        return deriv;
     }
 
     public ComplexNumber newtonsMethod(ComplexNumber n, int depth) {
+        for(int i = 0; i < depth; i ++){
+            n = n.subtract(evaluate(n).divide(derivative().evaluate(n)));
+        }
+       return n;
+    }
+    
+    public ComplexNumber recurNewtonsMethod(ComplexNumber n, int depth) {
         if (depth == 0)
             return n;
         return newtonsMethod(n.subtract(evaluate(n).divide(derivative().evaluate(n))), depth - 1);
