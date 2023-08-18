@@ -10,8 +10,8 @@ import java.awt.image.BufferedImage;
 
 public class UI {
     static ArrayList<ComplexNumber> nextCoords;
-    static ArrayList<ComplexNumber> currentCoords;
-    static double fov = 1;
+    static NewtonsFractals currentCoords;
+    static double fov = 2;
     static double panx = 0;
     static double pany = 0;
     static double fovStep = 1.5;
@@ -19,12 +19,12 @@ public class UI {
     public static void main(String[] args) throws Exception {
         int imageRes = 400;
 
-        currentCoords = new ArrayList<ComplexNumber>();
+        currentCoords = new NewtonsFractals(ComplexNumber.zeroArr);
 
         nextCoords = new ArrayList<ComplexNumber>();
-        nextCoords.add(new ComplexNumber(0, 1));
-        nextCoords.add(new ComplexNumber(1, 0));
-        nextCoords.add(new ComplexNumber(0, 0));
+        nextCoords.add(new ComplexNumber(-1, 1));
+        nextCoords.add(new ComplexNumber(1, -1));
+        nextCoords.add(new ComplexNumber(-1, -1));
         nextCoords.add(new ComplexNumber(1, 1));
 
         JLabel canvas = new JLabel();
@@ -48,12 +48,11 @@ public class UI {
             resetCoordinateData(canvas, imageRes);
         });
 
-        JButton render = new JButton("Render");
+        JButton render = new JButton("render canvas");
         render.addActionListener(e -> {
             ExecutorService executorService = Executors.newSingleThreadExecutor();
             executorService.submit(() -> {
-                ColorImage newImg = Tests.newtonsFractals(currentCoords.toArray(new ComplexNumber[0]), 20, 6000, fov,
-                        panx, pany);
+                ColorImage newImg = currentCoords.generate(20, 6000, fov, panx, pany);
                 ColorImage.save("./output/output" + System.currentTimeMillis() + ".png", newImg);
             });
             executorService.shutdown(); // Remember to shut down the ExecutorService when done
@@ -97,18 +96,19 @@ public class UI {
     }
 
     private static void resetCoordinateData(JLabel canvas, int imageRes) {
-        if (nextCoords.size() == 0)
-            nextCoords = currentCoords;
+        if (nextCoords.size() == 0) {
+            JOptionPane.showMessageDialog(canvas, "No selected roots");
+            return;
+        }
 
-        currentCoords = nextCoords;
+        currentCoords = new NewtonsFractals(nextCoords.toArray(new ComplexNumber[0]));
         nextCoords = new ArrayList<ComplexNumber>();
         renderCurrent(canvas, imageRes);
         System.out.println("image updated");
     }
 
     private static void renderCurrent(JLabel canvas, int imageRes) {
-        ColorImage newImg = Tests.newtonsFractals(currentCoords.toArray(new ComplexNumber[0]), 10, 500, fov, panx,
-                pany);
+        ColorImage newImg = currentCoords.generate(10, 500, fov, panx, pany);
         setIcon(canvas, newImg, imageRes);
     }
 
@@ -117,29 +117,25 @@ public class UI {
 
         JButton decreaseFov = new JButton("-");
         decreaseFov.addActionListener(e -> {
-            double panDiff = fov  * (1-fovStep) /2;
-            panx += panDiff;
-            pany += panDiff;
-
             fov *= fovStep;
 
+            System.out.println(fov);
             renderCurrent(canvas, imageRes);
         });
         JButton resetFov = new JButton("reset");
         resetFov.addActionListener(e -> {
-            if (fov == 1) {
+            if (fov == 2) {
                 return;
             }
-            fov = 1;
+            fov = 2;
+            System.out.println(fov);
             renderCurrent(canvas, imageRes);
         });
         JButton increaseFov = new JButton("+");
         increaseFov.addActionListener(e -> {
-            double panDiff = fov  * (1-(1/fovStep)) /2;
-            panx += panDiff;
-            pany += panDiff;
 
             fov /= fovStep;
+            System.out.println(fov);
             renderCurrent(canvas, imageRes);
         });
 
@@ -181,7 +177,6 @@ public class UI {
         xPan.add(resetPan);
         xPan.add(panPosX);
 
-        
         JButton panNegY = new JButton("v");
         panNegY.addActionListener(e -> {
             pany -= .25 * fov;
@@ -189,7 +184,7 @@ public class UI {
         });
         JPanel panNegYContainer = new JPanel();
         panNegYContainer.add(panNegY);
-        
+
         JButton panPosY = new JButton("^");
         panPosY.addActionListener(e -> {
             pany += .25 * fov;

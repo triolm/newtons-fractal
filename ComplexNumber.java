@@ -1,6 +1,7 @@
 public class ComplexNumber {
     private double real,i;
     public static ComplexNumber zero = new ComplexNumber(0,0);
+    public static ComplexNumber[] zeroArr = {new ComplexNumber(0,0)};
 
     public ComplexNumber(double real, double i){
         this.real = real;
