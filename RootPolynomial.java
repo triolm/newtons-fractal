@@ -16,10 +16,6 @@ public class RootPolynomial extends Polynomial {
         return total.getCoeffs();
     }
 
-    public ComplexNumber newtonsFractalPixel(ComplexNumber n, int depth) {
-        return closestRoot(newtonsMethod(n, depth));
-    }
-
     public ComplexNumber closestRoot(ComplexNumber n) {
         ComplexNumber root = roots[0];
         double minDist = Double.POSITIVE_INFINITY;

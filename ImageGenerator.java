@@ -9,8 +9,31 @@ public abstract class ImageGenerator {
         System.out.print("\u2591".repeat(20 - (int) progress));
     }
 
-    public abstract ColorImage generate(int depth, int width, double fov, double panx,
-            double pany);
+    public ColorImage generate(int depth, int width, double fov, double panx,
+            double pany) {
+        double timeUntilProgressUpdate = 0;
+        progress(0);
+
+        ColorImage img = new ColorImage(width, width);
+        for (int i = 0; i < img.getWidth(); i++) {
+
+            timeUntilProgressUpdate += 20.0 / img.getWidth();
+            if (timeUntilProgressUpdate > 1) {
+                timeUntilProgressUpdate = 0;
+                progress((double) i / img.getWidth());
+            }
+
+            for (int j = 0; j < img.getHeight(); j++) {
+                img.put(getPixelColor(panx + (fov * i / width - fov / 2),
+                        pany + (fov * j / width - fov / 2), depth), i, j);
+            }
+
+        }
+        progress(1);
+        return img;
+    }
+
+    public abstract Color getPixelColor(double x, double y, int depth);
 
     public ColorImage generate(int depth, int width, double fov) {
         return generate(depth, width, fov, 0, 0);

@@ -96,18 +96,7 @@ public class Polynomial {
         return deriv;
     }
 
-    public ComplexNumber newtonsMethod(ComplexNumber n, int depth) {
-        for(int i = 0; i < depth; i ++){
-            n = n.subtract(evaluate(n).divide(derivative().evaluate(n)));
-        }
-       return n;
-    }
-    
-    public ComplexNumber recurNewtonsMethod(ComplexNumber n, int depth) {
-        if (depth == 0)
-            return n;
-        return newtonsMethod(n.subtract(evaluate(n).divide(derivative().evaluate(n))), depth - 1);
-    }
+   
 
     public String toString() {
         String str = "";
