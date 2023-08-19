@@ -1,7 +1,5 @@
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -10,26 +8,23 @@ import java.awt.image.BufferedImage;
 
 public class UI {
     static ArrayList<ComplexNumber> nextCoords;
-    static NewtonsFractals currentCoords;
-    static double fov = 2;
+    static ImageGenerator current;
+    final static double defaultFov = 4;
+    static double fov = defaultFov;
+    final static double fovStep = 1.5;
     static double panx = 0;
     static double pany = 0;
-    static double fovStep = 1.5;
+    final static double panStep = .25;
+    static String fractalType = "Newton";
 
     public static void main(String[] args) throws Exception {
         int imageRes = 400;
 
-        currentCoords = new NewtonsFractals(ComplexNumber.zeroArr);
+        current = new NewtonsFractals(ComplexNumber.zeroArr);
 
-        nextCoords = new ArrayList<ComplexNumber>();
-        nextCoords.add(new ComplexNumber(-1, 1));
-        nextCoords.add(new ComplexNumber(1, -1));
-        nextCoords.add(new ComplexNumber(-1, -1));
-        nextCoords.add(new ComplexNumber(1, 1));
+        nextCoords = defaultCoords();
 
         JLabel canvas = new JLabel();
-        BufferedImage img = ImageIO.read(new File("./output/image2.png"));
-        setIcon(canvas, img, imageRes);
 
         resetCoordinateData(canvas, imageRes);
 
@@ -52,8 +47,8 @@ public class UI {
         render.addActionListener(e -> {
             ExecutorService executorService = Executors.newSingleThreadExecutor();
             executorService.submit(() -> {
-                ColorImage newImg = currentCoords.generate(20, 6000, fov, panx, pany);
-                ColorImage.save("./output/output" + System.currentTimeMillis() + ".png", newImg);
+                current.generate(20, 6000, fov, panx, pany);
+                current.save();
             });
             executorService.shutdown(); // Remember to shut down the ExecutorService when done
 
@@ -70,17 +65,39 @@ public class UI {
 
         f.setLayout(new FlowLayout());
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-
         JPanel canvasHolder = new JPanel();
         canvasHolder.add(canvas);
 
-        panel.add(canvasHolder);
-        panel.add(renderBtns);
+        String[] fractalTypes = { "Newton", "Mandelbrot", "Julia" };
+        JComboBox<String> fractalTypeSelect = new JComboBox<String>(fractalTypes);
+        fractalTypeSelect.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                fractalType = (String) fractalTypeSelect.getSelectedItem();
+                resetCoordinateData(canvas, imageRes);
+            }
+        });
 
-        panel.add(fovControls(canvas, imageRes));
-        panel.add(panControls(canvas, imageRes));
+        JPanel col1 = new JPanel();
+        col1.setLayout(new BoxLayout(col1, BoxLayout.PAGE_AXIS));
+
+        col1.add(renderBtns);
+
+        col1.add(fovControls(canvas, imageRes));
+        col1.add(panControls(canvas, imageRes));
+
+        JPanel col2 = new JPanel();
+        col2.setLayout(new BoxLayout(col2, BoxLayout.PAGE_AXIS));
+        col2.add(fractalTypeSelect);
+
+        JPanel controls = new JPanel();
+
+        controls.add(col1);
+        controls.add(col2);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
+        panel.add(canvasHolder);
+        panel.add(controls);
 
         f.add(panel);
 
@@ -96,19 +113,29 @@ public class UI {
     }
 
     private static void resetCoordinateData(JLabel canvas, int imageRes) {
-        if (nextCoords.size() == 0) {
-            JOptionPane.showMessageDialog(canvas, "No selected roots");
-            return;
-        }
 
-        currentCoords = new NewtonsFractals(nextCoords.toArray(new ComplexNumber[0]));
+        if (fractalType.equals("Newton")) {
+            if (nextCoords.size() != 0) {
+                current = new NewtonsFractals(nextCoords.toArray(new ComplexNumber[0]));
+            } else if (nextCoords.size() == 0 && !(current instanceof NewtonsFractals)) {
+                current = new NewtonsFractals(defaultCoords().toArray(new ComplexNumber[0]));
+            }
+        } else if (fractalType.equals("Mandelbrot")) {
+            current = new Mandlebrot();
+        } else if (fractalType.equals("Julia")) {
+            if (nextCoords.size() != 0) {
+                current = new Julia(nextCoords.get(nextCoords.size() - 1));
+            } else if (nextCoords.size() == 0 && !(current instanceof Julia)) {
+                current = new Julia(ComplexNumber.zero);
+            }
+        }
         nextCoords = new ArrayList<ComplexNumber>();
         renderCurrent(canvas, imageRes);
         System.out.println("image updated");
     }
 
     private static void renderCurrent(JLabel canvas, int imageRes) {
-        ColorImage newImg = currentCoords.generate(10, 500, fov, panx, pany);
+        ColorImage newImg = current.generate(10, 500, fov, panx, pany);
         setIcon(canvas, newImg, imageRes);
     }
 
@@ -124,10 +151,10 @@ public class UI {
         });
         JButton resetFov = new JButton("reset");
         resetFov.addActionListener(e -> {
-            if (fov == 2) {
+            if (fov == defaultFov) {
                 return;
             }
-            fov = 2;
+            fov = defaultFov;
             System.out.println(fov);
             renderCurrent(canvas, imageRes);
         });
@@ -162,13 +189,13 @@ public class UI {
 
         JButton panNegX = new JButton("<");
         panNegX.addActionListener(e -> {
-            panx -= .25 * fov;
+            panx -= panStep * fov;
             renderCurrent(canvas, imageRes);
         });
 
         JButton panPosX = new JButton(">");
         panPosX.addActionListener(e -> {
-            panx += .25 * fov;
+            panx += panStep * fov;
             renderCurrent(canvas, imageRes);
         });
 
@@ -179,7 +206,7 @@ public class UI {
 
         JButton panNegY = new JButton("v");
         panNegY.addActionListener(e -> {
-            pany -= .25 * fov;
+            pany -= panStep * fov;
             renderCurrent(canvas, imageRes);
         });
         JPanel panNegYContainer = new JPanel();
@@ -187,7 +214,7 @@ public class UI {
 
         JButton panPosY = new JButton("^");
         panPosY.addActionListener(e -> {
-            pany += .25 * fov;
+            pany += panStep * fov;
             renderCurrent(canvas, imageRes);
         });
         JPanel panPosYContainer = new JPanel();
@@ -198,5 +225,14 @@ public class UI {
         panControls.add(panNegYContainer);
 
         return panControls;
+    }
+
+    public static ArrayList<ComplexNumber> defaultCoords() {
+        ArrayList<ComplexNumber> n = new ArrayList<ComplexNumber>();
+        n.add(new ComplexNumber(-1, 1));
+        n.add(new ComplexNumber(1, -1));
+        n.add(new ComplexNumber(-1, -1));
+        n.add(new ComplexNumber(1, 1));
+        return n;
     }
 }

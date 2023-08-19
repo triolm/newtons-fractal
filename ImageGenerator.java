@@ -1,5 +1,5 @@
 public abstract class ImageGenerator {
-    private String filename;
+    protected String filename;
     private ColorImage img;
 
     public static void progress(double progress) {
@@ -30,6 +30,7 @@ public abstract class ImageGenerator {
 
         }
         progress(1);
+        this.img = img;
         return img;
     }
 
@@ -44,7 +45,7 @@ public abstract class ImageGenerator {
     }
 
     public String save() {
-        String savedName = filename + "-" + System.currentTimeMillis() + ".png";
+        String savedName = "./output/" + filename + "-" + System.currentTimeMillis() + ".png";
         ColorImage.save(savedName, img);
         return savedName;
     }
