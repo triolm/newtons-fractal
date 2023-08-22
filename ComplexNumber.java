@@ -6,6 +6,13 @@ public class ComplexNumber {
     public ComplexNumber(double real, double i) {
         this.real = real;
         this.i = i;
+
+        // if(Double.isNaN(this.real)){
+        //     System.out.println("NaN");
+        // }
+        // if(Double.isNaN(this.i)){
+        //     System.out.println("NaN");
+        // }
     }
 
     public ComplexNumber(double real) {
@@ -36,7 +43,9 @@ public class ComplexNumber {
         i = this.i * other.getReal();
         l = this.i * other.getI() * -1;
 
-        return new ComplexNumber(f + l, o + i);
+        return new ComplexNumber(
+                Double.isNaN(f + l) ? Double.POSITIVE_INFINITY : f + l,
+                Double.isNaN(o + i) ? Double.POSITIVE_INFINITY : o + i);
     }
 
     public ComplexNumber divide(ComplexNumber other) {
@@ -70,7 +79,7 @@ public class ComplexNumber {
     }
 
     public double abs() {
-        if(Double.isInfinite(i) || Double.isInfinite(real) || Double.isNaN(i) || Double.isNaN(real)){
+        if (Double.isInfinite(i) || Double.isInfinite(real) || Double.isNaN(i) || Double.isNaN(real)) {
             return Double.POSITIVE_INFINITY;
         }
         return getDist(zero);

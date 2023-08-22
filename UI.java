@@ -15,7 +15,19 @@ public class UI {
     static double panx = 0;
     static double pany = 0;
     final static double panStep = .25;
-    static String fractalType = "Newton";
+    static String fractalType = "Julia";
+
+    static int defPreviewDepth = 30;
+    static int defPreviewDepthNewton = 10;
+
+    static int defRenderDepth = 200;
+    static int defRenderDepthNewton = 20;
+
+    static int previewDepth;
+    static int previewWidth = 500;
+
+    static int renderDepth;
+    static int renderWidth = 6000;
 
     public static void main(String[] args) throws Exception {
         int imageRes = 400;
@@ -47,7 +59,7 @@ public class UI {
         render.addActionListener(e -> {
             ExecutorService executorService = Executors.newSingleThreadExecutor();
             executorService.submit(() -> {
-                current.generate(20, 6000, fov, panx, pany);
+                current.generate(renderDepth, renderWidth, fov, panx, pany);
                 current.save();
             });
             executorService.shutdown(); // Remember to shut down the ExecutorService when done
@@ -70,6 +82,7 @@ public class UI {
 
         String[] fractalTypes = { "Newton", "Mandelbrot", "Julia" };
         JComboBox<String> fractalTypeSelect = new JComboBox<String>(fractalTypes);
+        fractalTypeSelect.setSelectedItem(fractalType);
         fractalTypeSelect.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 fractalType = (String) fractalTypeSelect.getSelectedItem();
@@ -115,27 +128,35 @@ public class UI {
     private static void resetCoordinateData(JLabel canvas, int imageRes) {
 
         if (fractalType.equals("Newton")) {
+            renderDepth = defRenderDepthNewton;
+            previewDepth = defPreviewDepthNewton;
             if (nextCoords.size() != 0) {
                 current = new NewtonsFractals(nextCoords.toArray(new ComplexNumber[0]));
             } else if (nextCoords.size() == 0 && !(current instanceof NewtonsFractals)) {
                 current = new NewtonsFractals(defaultCoords().toArray(new ComplexNumber[0]));
             }
         } else if (fractalType.equals("Mandelbrot")) {
+            renderDepth = defRenderDepth;
+            previewDepth = defPreviewDepth;
             current = new Mandlebrot();
         } else if (fractalType.equals("Julia")) {
+            renderDepth = defRenderDepth;
+            previewDepth = defPreviewDepth;
             if (nextCoords.size() != 0) {
                 current = new Julia(nextCoords.get(nextCoords.size() - 1));
             } else if (nextCoords.size() == 0 && !(current instanceof Julia)) {
                 current = new Julia(ComplexNumber.zero);
             }
         }
+
+        System.out.println("depth" + previewDepth);
         nextCoords = new ArrayList<ComplexNumber>();
         renderCurrent(canvas, imageRes);
         System.out.println("image updated");
     }
 
     private static void renderCurrent(JLabel canvas, int imageRes) {
-        ColorImage newImg = current.generate(10, 500, fov, panx, pany);
+        ColorImage newImg = current.generate(previewDepth, previewWidth, fov, panx, pany);
         setIcon(canvas, newImg, imageRes);
     }
 
@@ -146,7 +167,6 @@ public class UI {
         decreaseFov.addActionListener(e -> {
             fov *= fovStep;
 
-            System.out.println(fov);
             renderCurrent(canvas, imageRes);
         });
         JButton resetFov = new JButton("reset");
@@ -155,14 +175,12 @@ public class UI {
                 return;
             }
             fov = defaultFov;
-            System.out.println(fov);
             renderCurrent(canvas, imageRes);
         });
         JButton increaseFov = new JButton("+");
         increaseFov.addActionListener(e -> {
 
             fov /= fovStep;
-            System.out.println(fov);
             renderCurrent(canvas, imageRes);
         });
 
