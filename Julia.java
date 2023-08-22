@@ -14,28 +14,28 @@ public class Julia extends ImageGenerator {
         this.filename = "julia";
 
     }
-
-    public Color getPixelColor(double x, double y, int depth) {
+    
+    public double getPixelColorMapVal(double x, double y, int depth) {
 
         ComplexNumber n = new ComplexNumber(x, y);
-        double val = getPixel(n, depth);
+        double val = getConvergenceIterations(n, depth);
 
         if (val > 0) {
-            return new Color((double) val / depth, (double) val / depth, 1);
+            return val;
         }
-        if (val > -2) {
-            return new Color(0, 0, 0);
+        if (val > -thresh) {
+            return 0;
         }
-        return new Color(1, 1, 1);
+        return Double.POSITIVE_INFINITY;
 
     }
 
-    public double getPixel(ComplexNumber n, int depth) {
+    public double getConvergenceIterations(ComplexNumber n, int depth) {
         ComplexNumber z = n;
         for (int i = 0; i < depth; i++) {
             z = z.multiply(z);
             z = z.add(c);
-            if (z.abs() == Double.POSITIVE_INFINITY) {
+            if (Double.isInfinite(z.abs())) {
                 return i;
             }
         }

@@ -16,17 +16,27 @@ public class RootPolynomial extends Polynomial {
         return total.getCoeffs();
     }
 
-    public ComplexNumber closestRoot(ComplexNumber n) {
+    public ComplexNumber[] getRoots(){
+        return roots;
+    }
+
+    public int closestRootIndex(ComplexNumber n) {
         ComplexNumber root = roots[0];
         double minDist = Double.POSITIVE_INFINITY;
+        int minIndex = 0;
 
-        for (ComplexNumber i : roots) {
-            double dist = n.getDist(i);
+        for (int i =0; i < roots.length; i ++ ) {
+            double dist = n.getDist(roots[i]);
             if (dist > minDist)
                 continue;
             minDist = dist;
-            root = i;
+            root = roots[i];
+            minIndex = i;
         }
-        return root;
+        return minIndex;
+    }
+
+    public ComplexNumber closestRoot(ComplexNumber n){
+        return roots[closestRootIndex(n)];
     }
 }

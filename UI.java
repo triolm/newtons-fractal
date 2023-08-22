@@ -20,7 +20,7 @@ public class UI {
     static int defPreviewDepth = 30;
     static int defPreviewDepthNewton = 10;
 
-    static int defRenderDepth = 200;
+    static int defRenderDepth = 300;
     static int defRenderDepthNewton = 20;
 
     static int previewDepth;
@@ -43,7 +43,8 @@ public class UI {
         canvas.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                ComplexNumber c = new ComplexNumber((double) e.getX() / imageRes, (double) e.getY() / imageRes);
+                ComplexNumber c = ImageGenerator.transformPoint(
+                        new ComplexNumber((double) e.getX() / imageRes, (double) e.getY() / imageRes), panx, pany, fov);
                 System.out.println(c);
                 nextCoords.add(c);
             }
@@ -149,7 +150,6 @@ public class UI {
             }
         }
 
-        System.out.println("depth" + previewDepth);
         nextCoords = new ArrayList<ComplexNumber>();
         renderCurrent(canvas, imageRes);
         System.out.println("image updated");

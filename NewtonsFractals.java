@@ -6,15 +6,11 @@ public class NewtonsFractals extends ImageGenerator {
         this.filename = "newton";
     }
 
-    public Color getPixelColor(double x, double y, int depth) {
+    public double getPixelColorMapVal(double x, double y, int depth) {
         ComplexNumber n = new ComplexNumber(x, y);
 
-        ComplexNumber closest = getPixel(n, depth);
-        return new Color(closest.getReal(), .5, closest.getI());
-    }
-
-    private ComplexNumber getPixel(ComplexNumber n, int depth) {
-        return p.closestRoot(newtonsMethod(n, depth));
+        double closest = p.closestRootIndex(newtonsMethod(n, depth));
+        return closest;
     }
 
     public ComplexNumber newtonsMethod(ComplexNumber n, int depth) {
@@ -23,4 +19,5 @@ public class NewtonsFractals extends ImageGenerator {
         }
         return n;
     }
+
 }
