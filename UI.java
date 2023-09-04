@@ -60,8 +60,9 @@ public class UI {
         render.addActionListener(e -> {
             ExecutorService executorService = Executors.newSingleThreadExecutor();
             executorService.submit(() -> {
-                current.generate(renderDepth, renderWidth, fov, panx, pany);
-                current.save();
+                ImageGenerator toRender = current;
+                toRender.generate(renderDepth, renderWidth, fov, panx, pany);
+                toRender.save();
             });
             executorService.shutdown(); // Remember to shut down the ExecutorService when done
 
@@ -91,6 +92,15 @@ public class UI {
             }
         });
 
+        JButton settingsButton = new JButton("Settings");
+        settingsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Create and show a dialog here
+                showSettingsDialog(settingsButton);
+            }
+        });
+
         JPanel col1 = new JPanel();
         col1.setLayout(new BoxLayout(col1, BoxLayout.PAGE_AXIS));
 
@@ -102,6 +112,7 @@ public class UI {
         JPanel col2 = new JPanel();
         col2.setLayout(new BoxLayout(col2, BoxLayout.PAGE_AXIS));
         col2.add(fractalTypeSelect);
+        col2.add(settingsButton);
 
         JPanel controls = new JPanel();
 
@@ -253,4 +264,80 @@ public class UI {
         n.add(new ComplexNumber(1, 1));
         return n;
     }
+
+    private static void showSettingsDialog(Component parent) {
+        JPanel settingsPanel = new JPanel();
+        settingsPanel.setLayout(new GridLayout(6, 1));
+    
+        // Create spinner components for existing variables...
+        SpinnerModel renderWidthModel = new SpinnerNumberModel(renderWidth, 100, 10000, 100);
+        JSpinner renderWidthSpinner = new JSpinner(renderWidthModel);
+        JLabel renderWidthLabel = new JLabel("Rendered Image Width");
+        JPanel renderWidthPanel = new JPanel();
+        renderWidthPanel.add(renderWidthLabel);
+        renderWidthPanel.add(renderWidthSpinner);
+        settingsPanel.add(renderWidthPanel);
+    
+        SpinnerModel renderDepthModel = new SpinnerNumberModel(renderDepth, 1, 1000, 10);
+        JSpinner renderDepthSpinner = new JSpinner(renderDepthModel);
+        JLabel renderDepthLabel = new JLabel("Rendered Image Depth");
+        JPanel renderDepthPanel = new JPanel();
+        renderDepthPanel.add(renderDepthLabel);
+        renderDepthPanel.add(renderDepthSpinner);
+        settingsPanel.add(renderDepthPanel);
+    
+        SpinnerModel previewWidthModel = new SpinnerNumberModel(previewWidth, 100, 10000, 100);
+        JSpinner previewWidthSpinner = new JSpinner(previewWidthModel);
+        JLabel previewWidthLabel = new JLabel("Preview Image Width");
+        JPanel previewWidthPanel = new JPanel();
+        previewWidthPanel.add(previewWidthLabel);
+        previewWidthPanel.add(previewWidthSpinner);
+        settingsPanel.add(previewWidthPanel);
+    
+        SpinnerModel previewDepthModel = new SpinnerNumberModel(previewDepth, 1, 1000, 10);
+        JSpinner previewDepthSpinner = new JSpinner(previewDepthModel);
+        JLabel previewDepthLabel = new JLabel("Preview Image Depth");
+        JPanel previewDepthPanel = new JPanel();
+        previewDepthPanel.add(previewDepthLabel);
+        previewDepthPanel.add(previewDepthSpinner);
+        settingsPanel.add(previewDepthPanel);
+    
+        // Create spinner components for newtonRenderDepth and newtonPreviewDepth
+        SpinnerModel newtonRenderDepthModel = new SpinnerNumberModel(defRenderDepthNewton, 1, 1000, 10);
+        JSpinner newtonRenderDepthSpinner = new JSpinner(newtonRenderDepthModel);
+        JLabel newtonRenderDepthLabel = new JLabel("Newton Render Depth");
+        JPanel newtonRenderDepthPanel = new JPanel();
+        newtonRenderDepthPanel.add(newtonRenderDepthLabel);
+        newtonRenderDepthPanel.add(newtonRenderDepthSpinner);
+        settingsPanel.add(newtonRenderDepthPanel);
+    
+        SpinnerModel newtonPreviewDepthModel = new SpinnerNumberModel(defPreviewDepthNewton, 1, 1000, 10);
+        JSpinner newtonPreviewDepthSpinner = new JSpinner(newtonPreviewDepthModel);
+        JLabel newtonPreviewDepthLabel = new JLabel("Newton Preview Depth");
+        JPanel newtonPreviewDepthPanel = new JPanel();
+        newtonPreviewDepthPanel.add(newtonPreviewDepthLabel);
+        newtonPreviewDepthPanel.add(newtonPreviewDepthSpinner);
+        settingsPanel.add(newtonPreviewDepthPanel);
+    
+        int option = JOptionPane.showConfirmDialog(
+                parent,
+                settingsPanel,
+                "Settings",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+        );
+    
+        if (option == JOptionPane.OK_OPTION) {
+            // Retrieve settings values from spinners...
+            renderWidth = (int) renderWidthSpinner.getValue();
+            renderDepth = (int) renderDepthSpinner.getValue();
+            previewWidth = (int) previewWidthSpinner.getValue();
+            previewDepth = (int) previewDepthSpinner.getValue();
+            defRenderDepthNewton = (int) newtonRenderDepthSpinner.getValue();
+            defPreviewDepthNewton = (int) newtonPreviewDepthSpinner.getValue();
+    
+            // Perform any actions based on settings values...
+        }
+    }
+    
 }
