@@ -1,4 +1,4 @@
-public class Polynomial {
+public class Polynomial extends Function {
     private ComplexNumber[] coeffs;
     private Polynomial deriv;
     public static Polynomial one = new Polynomial();

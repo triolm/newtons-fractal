@@ -1,5 +1,5 @@
 public class NewtonsFractals extends ImageGenerator {
-    private RootPolynomial p;
+    private RootsKnown p;
     private Color[] colors;
       private int[] defaultColors = {0xEF476F, 0xFFD166, 0x06D6A0, 0x118AB2, 0x073B4C, 0xB4A0E5};
 
@@ -7,6 +7,11 @@ public class NewtonsFractals extends ImageGenerator {
         p = new RootPolynomial(roots);
         colors = generateColors(roots.length);
         this.filename = "newton";
+    }
+    
+    public NewtonsFractals(RootsKnown f){
+        p = f;
+        colors = generateColors(6);
     }
 
     public double getPixelColorMapVal(double x, double y, int depth) {
@@ -38,7 +43,7 @@ public class NewtonsFractals extends ImageGenerator {
     }
 
     public Color getColor(double n, double highest) {
-        return colors[(int)n];
+        return colors[Math.abs((int)n % colors.length)];
     }
 
 }

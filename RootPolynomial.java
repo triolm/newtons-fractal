@@ -1,4 +1,4 @@
-public class RootPolynomial extends Polynomial {
+public class RootPolynomial extends Polynomial implements RootsKnown {
     ComplexNumber[] roots;
 
     public RootPolynomial(ComplexNumber[] roots) {
