@@ -6,13 +6,6 @@ public class ComplexNumber {
     public ComplexNumber(double real, double i) {
         this.real = real;
         this.i = i;
-
-        // if(Double.isNaN(this.real)){
-        //     System.out.println("NaN");
-        // }
-        // if(Double.isNaN(this.i)){
-        //     System.out.println("NaN");
-        // }
     }
 
     public ComplexNumber(double real) {

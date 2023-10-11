@@ -42,7 +42,7 @@ public class UI {
 
         canvas.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 ComplexNumber c = ImageGenerator.transformPoint(
                         new ComplexNumber((double) e.getX() / imageRes, (double) e.getY() / imageRes), panx, pany, fov);
                 System.out.println(c);
